@@ -1,6 +1,5 @@
 {
   "name": "@_greataxe/indexed-object",
-  "author" "goku",
   "version": "1.0.0",
   "description": "A TypeScript utility for working with indexed collections of objects",
   "main": "dist/index.js",
