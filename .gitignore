@@ -26,3 +26,5 @@ Thumbs.db
 
 # Release
 .release-notes
+
+package-lock.json
