@@ -1,77 +1,61 @@
-import IndexedObject from './index';
-
-interface User {
-  user_id: string;
-  name: string;
-  email: string;
-}
-
-const usersData: User[] = [
-  { user_id: '1', name: 'John Doe', email: 'john@example.com' },
-  { user_id: '2', name: 'Jane Doe', email: 'jane@example.com' },
-];
+import { describe, it, expect } from 'vitest';
+import { IndexedObject } from './index';
 
 describe('IndexedObject', () => {
-  let users: IndexedObject&lt;User, 'user_id'>;
+  const testData = [
+    { user_id: 1, name: 'John', age: 30 },
+    { user_id: 2, name: 'Jane', age: 25 },
+    { user_id: 3, name: 'Bob', age: 35 }
+  ];
 
-  beforeEach(() => {
-    users = new IndexedObject(usersData, 'user_id');
-  });
-
-  it('should create an IndexedObject instance', () => {
-    expect(users).toBeInstanceOf(IndexedObject);
-  });
-
-  it('should access items by index', () => {
-    expect(users.at(0)).toEqual(usersData[0]);
-    expect(users.at(1)).toEqual(usersData[1]);
-    expect(users.at(2)).toBeUndefined();
-  });
-
-  it('should access items by ID', () => {
-    expect(users.getById('1')).toEqual(usersData[0]);
-    expect(users.getById('2')).toEqual(usersData[1]);
-    expect(users.getById('3')).toBeNull();
-  });
-
-  it('should sort items by a key', () => {
-    const sortedUsers = users.sortBy('name');
-    expect(sortedUsers.at(0)?.name).toBe('Jane Doe');
-    expect(sortedUsers.at(1)?.name).toBe('John Doe');
-  });
-
-  it('should filter items by a predicate', () => {
-    const filteredUsers = users.filterBy(user => user.email.includes('john@example.com'));
-    expect(filteredUsers.length).toBe(1);
-    expect(filteredUsers.at(0)?.name).toBe('John Doe');
-  });
-
-  it('should convert to an array', () => {
-    const usersArray = users.toArray();
-    expect(usersArray).toEqual(usersData);
-  });
-
-  it('should add data', () => {
-    users.addData({ user_id: '3', name: 'Mike Smith', email: 'mike@example.com' });
-    expect(users.getById('3')).toEqual({ user_id: '3', name: 'Mike Smith', email: 'mike@example.com' });
+  it('should create an instance with initial data', () => {
+    const users = new IndexedObject(testData, 'user_id');
     expect(users.length).toBe(3);
   });
 
-  it('should remove data', () => {
-    users.removeData('1');
-    expect(users.getById('1')).toBeNull();
-    expect(users.length).toBe(1);
+  it('should get item by index', () => {
+    const users = new IndexedObject(testData, 'user_id');
+    expect(users.get(0)).toEqual(testData[0]);
   });
 
-  it('should throw an error if index key is not found', () => {
-    expect(() => new IndexedObject([{ name: 'John' }], 'user_id' as any)).toThrowError(
-      'Index key "user_id" not found in item at index 0.',
-    );
+  it('should get item by id', () => {
+    const users = new IndexedObject(testData, 'user_id');
+    expect(users.getById(2)).toEqual(testData[1]);
   });
 
-  it('should throw an error if duplicate index key is found', () => {
-    expect(() => new IndexedObject([{ user_id: '1' }, { user_id: '1' }], 'user_id')).toThrowError(
-      'Duplicate index key "1" found in item at index 1.',
-    );
+  it('should sort items', () => {
+    const users = new IndexedObject(testData, 'user_id');
+    const sorted = users.sortBy('age');
+    expect(sorted.get(0)?.age).toBe(25);
+    expect(sorted.get(2)?.age).toBe(35);
+  });
+
+  it('should filter items', () => {
+    const users = new IndexedObject(testData, 'user_id');
+    const filtered = users.filterBy(user => user.age > 30);
+    expect(filtered.length).toBe(1);
+    expect(filtered.get(0)?.name).toBe('Bob');
+  });
+
+  it('should add new item', () => {
+    const users = new IndexedObject(testData, 'user_id');
+    const newUser = { user_id: 4, name: 'Alice', age: 28 };
+    users.add(newUser);
+    expect(users.length).toBe(4);
+    expect(users.getById(4)).toEqual(newUser);
+  });
+
+  it('should remove item', () => {
+    const users = new IndexedObject(testData, 'user_id');
+    expect(users.remove(2)).toBe(true);
+    expect(users.length).toBe(2);
+    expect(users.getById(2)).toBeUndefined();
+  });
+
+  it('should create deep copy', () => {
+    const users = new IndexedObject(testData, 'user_id');
+    const copied = users.deepCopy();
+    expect(copied.toArray()).toEqual(testData);
+    expect(copied.toArray()).not.toBe(testData);
   });
 });

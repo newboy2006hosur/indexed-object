@@ -1,105 +1,69 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const lodash_sortby_1 = __importDefault(require("lodash.sortby"));
+exports.IndexedObject = void 0;
 class IndexedObject {
-}
- & lt;
-T;
-Record & lt;
-K, string | number > , K;
-keyof;
-T = keyof;
-T > {
-    items: T[],
-    indexKey: K,
-    index: { [key]: string | number, T },
-    constructor(items, indexKey) {
-        this.items = items;
-        this.indexKey = indexKey;
-        this.index = {};
-        this.items.forEach((item, i) => {
-            const key = item[this.indexKey];
-            if (key === undefined) {
-                throw new Error(`Index key "${String(this.indexKey)}" not found in item at index ${i}.`);
-            }
-            if (typeof key !== 'string' && typeof key !== 'number') {
-                throw new Error(`Index key "${String(this.indexKey)}" must be a string or number, but got ${typeof key} in item at index ${i}.`);
-            }
-            if (this.index[key]) {
-                throw new Error(`Duplicate index key "${key}" found in item at index ${i}.`);
-            }
-            this.index[key] = item;
+    constructor(data, idKey) {
+        this.idKey = idKey;
+        this.data = [...data];
+        this.idMap = new Map();
+        this.buildIdMap();
+    }
+    buildIdMap() {
+        this.idMap.clear();
+        for (const item of this.data) {
+            this.idMap.set(item[this.idKey], item);
+        }
+    }
+    [Symbol.iterator]() {
+        return this.data[Symbol.iterator]();
+    }
+    get length() {
+        return this.data.length;
+    }
+    getById(id) {
+        return this.idMap.get(id);
+    }
+    sortBy(key, direction = 'asc') {
+        const sortedData = [...this.data].sort((a, b) => {
+            const valueA = a[key];
+            const valueB = b[key];
+            if (valueA < valueB)
+                return direction === 'asc' ? -1 : 1;
+            if (valueA > valueB)
+                return direction === 'asc' ? 1 : -1;
+            return 0;
         });
-    },
-    T
-} > {
-    return: this.items[Symbol.iterator]()
-};
-getById(id, string | number);
-T | null;
-{
-    return this.index[id] || null;
-}
-get;
-length();
-number;
-{
-    return this.items.length;
-}
-at(index, number);
-T | undefined;
-{
-    if (index & lt)
-        ;
-    0 || index >= this.items.length;
-    {
-        return undefined;
+        return new IndexedObject(sortedData, this.idKey);
     }
-    return this.items[index];
-}
-(0, lodash_sortby_1.default)(key, keyof, T);
-IndexedObject & lt;
-T, K > {
-    const: sortedItems = (0, lodash_sortby_1.default)(this.items, key),
-    return: new IndexedObject(sortedItems, this.indexKey)
-};
-filterBy(predicate, (item) => boolean);
-IndexedObject & lt;
-T, K > {
-    const: filteredItems = this.items.filter(predicate),
-    return: new IndexedObject(filteredItems, this.indexKey)
-};
-toArray();
-T[];
-{
-    return [...this.items];
-}
-addData(item, T);
-void {
-    const: key = item[this.indexKey],
-    if(key) { }
-} === undefined;
-{
-    throw new Error(`Index key "${String(this.indexKey)}" not found in item.`);
-}
-if (typeof key !== 'string' && typeof key !== 'number') {
-    throw new Error(`Index key "${String(this.indexKey)}" must be a string or number, but got ${typeof key}.`);
-}
-if (this.index[key]) {
-    throw new Error(`Duplicate index key "${key}" found.`);
-}
-this.items.push(item);
-this.index[key] = item;
-removeData(id, string | number);
-void {
-    const: itemToRemove = this.getById(id),
-    if(itemToRemove) {
-        this.items = this.items.filter(item => item !== itemToRemove);
-        delete this.index[id];
+    filterBy(predicate) {
+        const filteredData = this.data.filter(predicate);
+        return new IndexedObject(filteredData, this.idKey);
     }
-};
-exports.default = IndexedObject;
-//# sourceMappingURL=index.js.map
+    toArray() {
+        return [...this.data];
+    }
+    add(item) {
+        const id = item[this.idKey];
+        if (this.idMap.has(id)) {
+            throw new Error(`Item with id ${String(id)} already exists`);
+        }
+        this.data.push(item);
+        this.idMap.set(id, item);
+    }
+    remove(id) {
+        const index = this.data.findIndex(item => item[this.idKey] === id);
+        if (index === -1)
+            return false;
+        this.data.splice(index, 1);
+        this.idMap.delete(id);
+        return true;
+    }
+    deepCopy() {
+        const copiedData = this.data.map(item => JSON.parse(JSON.stringify(item)));
+        return new IndexedObject(copiedData, this.idKey);
+    }
+    get(index) {
+        return this.data[index];
+    }
+}
+exports.IndexedObject = IndexedObject;

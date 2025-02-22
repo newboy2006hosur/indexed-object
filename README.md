@@ -1,79 +1,79 @@
-# IndexedObject
+# indexed-object
 
-A class that indexes an array of objects by a specified key for easy access.
+A TypeScript utility for working with indexed collections of objects. This package provides an efficient way to work with arrays of objects that have unique identifiers, offering features like indexing, sorting, filtering, and more.
+
+## Installation
+
+```bash
+npm install indexed-object
+```
 
 ## Usage
 
 ```typescript
-import IndexedObject from './src/index';
+import { IndexedObject } from 'indexed-object';
 
-interface User {
-  user_id: string;
-  name: string;
-  email: string;
-}
-
-const users = new IndexedObject&lt;User, 'user_id'>([
-  { user_id: '1', name: 'John Doe', email: 'john@example.com' },
-  { user_id: '2', name: 'Jane Doe', email: 'jane@example.com' },
+// Create a new indexed collection
+const users = new IndexedObject([
+  { user_id: 1, name: 'John', age: 30 },
+  { user_id: 2, name: 'Jane', age: 25 }
 ], 'user_id');
 
 // Access by index
-console.log(users.at(0)); // { user_id: '1', name: 'John Doe', email: 'john@example.com' }
+const firstUser = users.get(0);
 
 // Access by ID
-console.log(users.getById('2')); // { user_id: '2', name: 'Jane Doe', email: 'jane@example.com' }
+const userById = users.getById(2);
 
-// Sort by name
-const sortedUsers = users.sortBy('name');
-console.log(sortedUsers.at(0)); // { user_id: '2', name: 'Jane Doe', email: 'jane@example.com' }
+// Sort users by age
+const sortedUsers = users.sortBy('age');
 
-// Filter by email
-const filteredUsers = users.filterBy(user => user.email.includes('example.com'));
-console.log(filteredUsers.length); // 2
+// Filter users
+const filteredUsers = users.filterBy(user => user.age > 25);
 
-// Convert to array
-const usersArray = users.toArray();
-console.log(usersArray); // [{ user_id: '1', name: 'John Doe', email: 'john@example.com' }, { user_id: '2', name: 'Jane Doe', email: 'jane@example.com' }]
+// Add new user
+users.add({ user_id: 3, name: 'Bob', age: 35 });
 
-// Add data
-users.addData({ user_id: '3', name: 'Mike Smith', email: 'mike@example.com' });
-console.log(users.getById('3')); // { user_id: '3', name: 'Mike Smith', email: 'mike@example.com' }
+// Remove user
+users.remove(2);
 
-// Remove data
-users.removeData('1');
-console.log(users.getById('1')); // null
+// Get original array
+const array = users.toArray();
+
+// Create a deep copy
+const copy = users.deepCopy();
 ```
+
+## Features
+
+- Access items by index or ID
+- Sort collection by any property
+- Filter collection
+- Add/remove items
+- Convert to array
+- Create deep copies
+- TypeScript support
+- Immutable operations (sort/filter return new instances)
 
 ## API
 
-### `constructor(items: T[], indexKey: K)`
+### Constructor
 
-Creates a new `IndexedObject` instance.
+```typescript
+new IndexedObject<T>(data: T[], idKey: keyof T)
+```
 
-*   `items`: An array of objects to index.
-*   `indexKey`: The key to use as the index.
+### Methods
 
-### `getById(id: string | number): T | null`
+- `get(index: number): T | undefined` - Get item by index
+- `getById(id: any): T | undefined` - Get item by ID
+- `sortBy(key: keyof T, direction?: 'asc' | 'desc'): IndexedObject<T>` - Sort collection
+- `filterBy(predicate: (item: T) => boolean): IndexedObject<T>` - Filter collection
+- `toArray(): T[]` - Convert to array
+- `add(item: T): void` - Add new item
+- `remove(id: any): boolean` - Remove item by ID
+- `deepCopy(): IndexedObject<T>` - Create deep copy
 
-Returns the object with the specified ID, or `null` if not found.
+## License
 
-### `sortBy(key: keyof T): IndexedObject&lt;T, K>`
-
-Returns a new `IndexedObject` instance with the items sorted by the specified key.
-
-### `filterBy(predicate: (item: T) => boolean): IndexedObject&lt;T, K>`
-
-Returns a new `IndexedObject` instance with the items filtered by the specified predicate.
-
-### `toArray(): T[]`
-
-Returns a new array containing all the items in the `IndexedObject`.
-
-### `addData(item: T): void`
-
-Adds a new item to the `IndexedObject`.
-
-### `removeData(id: string | number): void`
-
-Removes the item with the specified ID from the `IndexedObject`.
+MIT
