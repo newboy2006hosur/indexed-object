@@ -23,6 +23,9 @@
   ],
   "author": "",
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^10.0.4",
