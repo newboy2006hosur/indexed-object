@@ -64,10 +64,14 @@ describe('IndexedObject', () => {
   });
 
   it('should throw an error if index key is not found', () => {
-    expect(() => new IndexedObject([{ name: 'John' }], 'user_id' as any)).toThrowError('Index key "user_id" not found in item at index 0.');
+    expect(() => new IndexedObject([{ name: 'John' }], 'user_id' as any)).toThrowError(
+      'Index key "user_id" not found in item at index 0.',
+    );
   });
 
   it('should throw an error if duplicate index key is found', () => {
-    expect(() => new IndexedObject([{ user_id: '1' }, { user_id: '1' }], 'user_id')).toThrowError('Duplicate index key "1" found in item at index 1.');
+    expect(() => new IndexedObject([{ user_id: '1' }, { user_id: '1' }], 'user_id')).toThrowError(
+      'Duplicate index key "1" found in item at index 1.',
+    );
   });
 });

@@ -16,7 +16,9 @@ class IndexedObject&lt;T extends Record&lt;K, string | number>, K extends keyof 
         throw new Error(`Index key "${String(this.indexKey)}" not found in item at index ${i}.`);
       }
       if (typeof key !== 'string' && typeof key !== 'number') {
-        throw new Error(`Index key "${String(this.indexKey)}" must be a string or number, but got ${typeof key} in item at index ${i}.`);
+        throw new Error(
+          `Index key "${String(this.indexKey)}" must be a string or number, but got ${typeof key} in item at index ${i}.`,
+        );
       }
       if (this.index[key]) {
         throw new Error(`Duplicate index key "${key}" found in item at index ${i}.`);
@@ -60,12 +62,12 @@ class IndexedObject&lt;T extends Record&lt;K, string | number>, K extends keyof 
 
   addData(item: T): void {
     const key = item[this.indexKey];
-     if (key === undefined) {
-        throw new Error(`Index key "${String(this.indexKey)}" not found in item.`);
-      }
-      if (typeof key !== 'string' && typeof key !== 'number') {
-        throw new Error(`Index key "${String(this.indexKey)}" must be a string or number, but got ${typeof key}.`);
-      }
+    if (key === undefined) {
+      throw new Error(`Index key "${String(this.indexKey)}" not found in item.`);
+    }
+    if (typeof key !== 'string' && typeof key !== 'number') {
+      throw new Error(`Index key "${String(this.indexKey)}" must be a string or number, but got ${typeof key}.`);
+    }
     if (this.index[key]) {
       throw new Error(`Duplicate index key "${key}" found.`);
     }
