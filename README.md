@@ -11,7 +11,7 @@ npm install indexed-object
 ## Usage
 
 ```typescript
-import { IndexedObject } from 'indexed-object';
+import { IndexedObject } from '@_greataxe/indexed-object';
 
 // Create a new indexed collection
 const users = new IndexedObject([
